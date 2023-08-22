@@ -33,8 +33,20 @@ class Game{
 		this.black = null;
 	}
 	end(){
-		console.log('game ended')
 		this.ended = true;
+		if(this.game.exportJson()['turn'] === 'black'){
+			this.winner = 'white';
+		}
+		else if(this.game.exportJson()['turn'] === 'white'){
+			this.winner = 'black';
+		}
+		try{
+			sockets.get(this.white).emit('message', `Game ended ${this.winner} wins!`);
+			sockets.get(this.black).emit('message', `Game ended ${this.winner} wins!`);
+		}
+		catch{
+
+		}
 	}
 	add_player(player){
 		if(this.ended) return false;
@@ -66,10 +78,9 @@ class Game{
 		}
 	}
 	move(from, to){
-		try{this.game.move(from, to);}catch{}
-		console.log('here')
 		if(!sockets.get(this.white) && !sockets.get(this.black)){
 			this.end();
+			return;
 		}
 		else if(!sockets.get(this.white)){
 			sockets.get(this.black).emit('message', 'player disconnected');
@@ -80,20 +91,29 @@ class Game{
 			return;
 		}
 		else{
-			this.game.move(from, to);
+			try{
+				this.game.move(from, to);
+			}catch{}
 			sockets.get(this.white).emit('game-update', this.game);
 			sockets.get(this.black).emit('game-update', this.game);
+			if(this.game.exportJson().isFinished){
+				
+				this.end();
+			}
 		}
 	}
 }
 
 io.on('connection', sock => {
-	sockets.set(sock.toString(), sock);
+	sockets.set(sock.id, sock);
+	sock.on('disconnect', () => {
+		sockets.set(sock.id, null);
+	})
 	sock.on('game-join', (code) => {
 		let joined = false;
 		for(let i = 0; i < games.length; i++){
 			if(games[i].code === code){
-				if(games[i].add_player(sock.toString())){
+				if(games[i].add_player(sock.id)){
 					let gcode = games[i].code;
 					let ggame = games[i].game;
 					sock.emit('game-joined', { code: gcode, game: ggame })
@@ -103,31 +123,29 @@ io.on('connection', sock => {
 		}
 		if(!joined) sock.emit('message', 'No game with the given code') 
 	})
-	sock.on('game-move', ({ code, move }) => {
+	sock.on('game-move', (code, move) => {
 		for(let i = 0; i < games.length; i++){
 			if(games[i].code === code){
-				games[i].game.printToConsole()
-				if(games[i].started === true){
-					try{
-						games[i].move(move[0], move[1]);
-					}
-					catch{
-				
-					}
+				let next = games[i].game.board.configuration.turn
+				if(games[i].white === sock.id && next === 'white'){
+					games[i].move(move[0], move[1])
+				}
+				else if(games[i].black === sock.id && next === 'black'){
+					games[i].move(move[0], move[1])
 				}
 			}
 		}
 	})
-	sock.on('game-moves', ({ code, square }) => {
-		for(let i = 0; i < games[i].length; i++){
+	sock.on('game-moves', (code, square) => {
+		for(let i = 0; i < games.length; i++){
 			if(games[i].code === code){
-				return games[i].game.moves(square);
+				sock.emit('legal-moves', games[i].game.moves(square) )
 			}
 		}
 	})
 	sock.on('game-create', () => {
 		let code = uuidv4();
-		let new_game = new Game(code, sock.toString());
+		let new_game = new Game(code, sock.id);
 		games.push(new_game);
 		let game = new_game.game;
 		sock.emit('game-screate', { code, game });

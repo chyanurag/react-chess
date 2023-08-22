@@ -10,13 +10,13 @@
 .square{
 	width: 100px;
 	height: 100px;
-	border: 1px solid grey;
+	border: 1px solid black;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
 .square img{
-	width: 150px;
-	height: 150px;
-	padding: 1rem;
+	width: 100px;
+	height: 100px;
+	padding: .1rem;
 }
