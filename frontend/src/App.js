@@ -6,7 +6,7 @@ const Square = ({ id, piece, handleSelect }) => {
 	const isWhite = (files.indexOf(id[0]) + parseInt(id[1])) % 2 === 0;
 	return(
 		<div className="square" style={{backgroundColor : isWhite ? '#ffffff' : '#93bf56'}} id={`square-${id}`} onClick={() => handleSelect(id)}>
-			{piece && <img src={`http://localhost:5000/imgs/${pieces.get(piece)}`}/>}
+			{piece && <img alt={`${id}`} src={`http://localhost:5000/imgs/${pieces.get(piece)}`}/>}
 		</div>
 	)
 }
@@ -40,7 +40,6 @@ const App = () => {
 	const [waiting, setWaiting] = useState(false);
 	const [code, setCode] = useState(null);
 	const [selected, setSelected] = useState(null);
-	const [prevs, setPrev] = useState(null);
 	const [moves, setMoves] = useState([]);
 
 	useEffect(() => {
