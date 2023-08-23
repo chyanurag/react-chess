@@ -7,13 +7,15 @@ const http = require('http')
 const app = express()
 
 app.use(express.json())
-app.use(cors())
+app.use(cors({
+	origin: '*'
+}))
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static('static'))
 
 const io = socketio(http.createServer(app), {
 	cors : {
-		origin: 'http://localhost:3000',
+		origin: '*',
 		methods: ['GET', 'POST']
 	}
 })
@@ -31,6 +33,7 @@ class Game{
 		this.white = player;
 		this.ended = false;
 		this.black = null;
+		sockets.get(this.white).emit('message', 'white');
 	}
 	end(){
 		this.ended = true;
@@ -75,6 +78,7 @@ class Game{
 		else{
 			sockets.get(this.white).emit('game-update', this.game);
 			sockets.get(this.black).emit('game-update', this.game);
+			sockets.get(this.black).emit('message', 'black')
 		}
 	}
 	move(from, to){
@@ -144,7 +148,7 @@ io.on('connection', sock => {
 		}
 	})
 	sock.on('game-create', () => {
-		let code = uuidv4();
+		let code = uuidv4().toString().split('-')[0];
 		let new_game = new Game(code, sock.id);
 		games.push(new_game);
 		let game = new_game.game;

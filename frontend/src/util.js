@@ -42,7 +42,7 @@ pieces.set('n', 'black-knight.png');
 pieces.set('N', 'white-knight.png');
 pieces.set('b', 'black-bishop.png');
 pieces.set('B', 'white-bishop.png');
-const serverUrl = 'http://localhost:5001/'
+const serverUrl = 'http://192.168.7.118:5001/'
 
 const createSocket = () => {
 	const socket = io(serverUrl)
