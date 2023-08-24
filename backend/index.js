@@ -63,7 +63,6 @@ class Game{
 	}
 	start(){
 		this.started = true;
-		this.start_time = new Date();
 		if(!sockets.get(this.white) && !sockets.get(this.black)){
 			this.end();
 		}
