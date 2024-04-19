@@ -5,6 +5,7 @@ const socketio = require('socket.io')
 const cors = require('cors')
 const http = require('http')
 const app = express()
+require("dotenv").config()
 
 app.use(express.json())
 app.use(cors({
@@ -154,7 +155,7 @@ io.on('connection', sock => {
 		sock.emit('game-screate', { code, game });
 	})
 })
-io.listen(5001)
-app.listen(5000, () => {
-	console.log('5000')
+io.listen(process.env.SOCKETIO_PORT)
+app.listen(process.env.BACKEND_PORT, () => {
+	console.log(`Listening on ${process.env.BACKEND_PORT}`)
 })

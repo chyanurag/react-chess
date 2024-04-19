@@ -1,4 +1,5 @@
 const io = require('socket.io-client')
+require('dotenv').config()
 function fenToJson(ufen){
 	let fen = ufen.split(' ')[0];
 	let rank = 8;
@@ -42,7 +43,7 @@ pieces.set('n', 'black-knight.png');
 pieces.set('N', 'white-knight.png');
 pieces.set('b', 'black-bishop.png');
 pieces.set('B', 'white-bishop.png');
-const serverUrl = 'http://localhost:5001/'
+const serverUrl = process.env.SERVER_URL
 
 const createSocket = () => {
 	const socket = io(serverUrl)
