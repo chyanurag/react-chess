@@ -31,14 +31,14 @@ function fenToJson(ufen){
 	return squares;
 }
 const pieces = new Map()
-pieces.set('p', 'bp-alt.png');
-pieces.set('P', 'wp-alt.png');
+pieces.set('p', 'black-pawn.png');
+pieces.set('P', 'white-pawn.png');
 pieces.set('r', 'black-rook.png');
 pieces.set('R', 'white-rook.png');
-pieces.set('q', 'bq-alt.png');
-pieces.set('Q', 'wq-alt.png');
-pieces.set('k', 'bk-alt.png');
-pieces.set('K', 'wk-alt.png');
+pieces.set('q', 'black-queen.png');
+pieces.set('Q', 'white-queen.png');
+pieces.set('k', 'black-king.png');
+pieces.set('K', 'white-king.png');
 pieces.set('n', 'black-knight.png');
 pieces.set('N', 'white-knight.png');
 pieces.set('b', 'black-bishop.png');
